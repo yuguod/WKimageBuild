@@ -62,7 +62,6 @@ PACKAGES="$PACKAGES luci-app-netspeedtest"
 PACKAGES="$PACKAGES luci-app-turboacc"
 PACKAGES="$PACKAGES luci-app-ssr-plus"
 PACKAGES="$PACKAGES luci-app-lucky"
-PACKAGES="$PACKAGES luci-app-uninstall"
 #24.10.0
 PACKAGES="$PACKAGES luci-i18n-package-manager-zh-cn"
 PACKAGES="$PACKAGES luci-i18n-ttyd-zh-cn"
