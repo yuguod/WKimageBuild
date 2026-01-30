@@ -63,12 +63,12 @@ PACKAGES="$PACKAGES luci-i18n-filemanager-zh-cn"
 # 静态文件服务器dufs(推荐)
 PACKAGES="$PACKAGES luci-i18n-dufs-zh-cn"
 # 文件共享
-PACKAGES="$PACKAGES luci-app-samba4"
+PACKAGES="$PACKAGES luci-i18n-samba4-zh-cn"
 #常用工具
-PACKAGES="$PACKAGES luci-app-eqos"
-PACKAGES="$PACKAGES luci-app-upnp"
-PACKAGES="$PACKAGES luci-app-vsftpd"
-PACKAGES="$PACKAGES luci-app-arpbind"
+PACKAGES="$PACKAGES luci-i18n-eqos-zh-cn"
+PACKAGES="$PACKAGES luci-i18n-upnp-zh-cn"
+PACKAGES="$PACKAGES luci-i18n-vsftpd-zh-cn"
+PACKAGES="$PACKAGES luci-i18n-arpbind-zh-cn"
 
 # 第三方软件包 合并
 # ======== shell/custom-packages.sh =======
