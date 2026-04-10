@@ -60,9 +60,9 @@ PACKAGES="$PACKAGES openssh-sftp-server"
 # 文件管理器
 #PACKAGES="$PACKAGES luci-i18n-filemanager-zh-cn"
 #IPTV组播工具
-#PACKAGES="$PACKAGES igmpproxy"
+PACKAGES="$PACKAGES igmpproxy"
 PACKAGES="$PACKAGES luci-i18n-udpxy-zh-cn"
-PACKAGES="$PACKAGES uci-i18n-msd_lite-zh-cn"
+PACKAGES="$PACKAGES luci-i18n-msd_lite-zh-cn"
 
 # 第三方软件包 合并
 # ======== shell/custom-packages.sh =======
