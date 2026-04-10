@@ -59,19 +59,19 @@ PACKAGES="$PACKAGES luci-i18n-package-manager-zh-cn"
 PACKAGES="$PACKAGES luci-i18n-ttyd-zh-cn"
 PACKAGES="$PACKAGES openssh-sftp-server"
 # 文件管理器
-PACKAGES="$PACKAGES luci-i18n-filemanager-zh-cn"
+#PACKAGES="$PACKAGES luci-i18n-filemanager-zh-cn"
 # 静态文件服务器dufs(推荐)
 #PACKAGES="$PACKAGES luci-i18n-dufs-zh-cn"
 # 文件共享
-PACKAGES="$PACKAGES luci-i18n-samba4-zh-cn"
+#PACKAGES="$PACKAGES luci-i18n-samba4-zh-cn"
 #常用工具
-PACKAGES="$PACKAGES luci-i18n-eqos-zh-cn"
+#PACKAGES="$PACKAGES luci-i18n-eqos-zh-cn"
 PACKAGES="$PACKAGES luci-i18n-upnp-zh-cn"
-PACKAGES="$PACKAGES luci-i18n-vsftpd-zh-cn"
+#PACKAGES="$PACKAGES luci-i18n-vsftpd-zh-cn"
 #PACKAGES="$PACKAGES luci-i18n-arpbind-zh-cn"
 PACKAGES="$PACKAGES luci-i18n-zerotier-zh-cn"
 PACKAGES="$PACKAGES luci-i18n-nlbwmon-zh-cn"
-PACKAGES="$PACKAGES luci-i18n-sqm-zh-cn"
+#PACKAGES="$PACKAGES luci-i18n-sqm-zh-cn"
 #IPTV组播工具
 PACKAGES="$PACKAGES igmpproxy"
 PACKAGES="$PACKAGES luci-i18n-udpxy-zh-cn"
