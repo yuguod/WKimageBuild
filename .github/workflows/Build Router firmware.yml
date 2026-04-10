@@ -558,7 +558,7 @@ jobs:
           fi
 
 
-      - name: WirelessRouter ImmortalWrt Firmware
+      - name: WirelessRouter Firmware
         run: |
           profile="${{ github.event.inputs.profile }}"
           echo "Building for profile: $profile"
@@ -667,7 +667,7 @@ jobs:
         uses: softprops/action-gh-release@v2.2.1
         with:
           tag_name: ${{ github.event.inputs.profile }}
-          name: WirelessRouter ImmortalWrt Firmware
+          name: WirelessRouter OpenWrt Firmware
           body_path: ${{ github.workspace }}/mediatek-filogic/info.md
           files: |
             ${{ github.workspace }}/bin/targets/${{ env.platform }}/*
