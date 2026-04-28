@@ -68,6 +68,8 @@ CUSTOM_PACKAGES="$CUSTOM_PACKAGES luci-app-rtp2httpd luci-i18n-rtp2httpd-zh-cn"
 #Openclash依赖
 CUSTOM_PACKAGES="$CUSTOM_PACKAGES kmod-nft-tproxy"
 CUSTOM_PACKAGES="$CUSTOM_PACKAGES kmod-ipt-tproxy"
+#PHP轻量环境
+CUSTOM_PACKAGES="$CUSTOM_PACKAGES php8 php8-cgi php8-cli php8-mod-session php8-mod-curl"
 
 #===========================以下imm仓库内的软件==============================↓
 #CUSTOM_PACKAGES="$CUSTOM_PACKAGES luci-i18n-3cat-zh-cn"
