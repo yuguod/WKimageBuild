@@ -522,14 +522,15 @@ on:
 jobs:
   build:
     runs-on: ubuntu-22.04
-    env:
-      TZ: Asia/Shanghai
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
 
       - name: Set executable permissions
         run: |
+          env:
+            TZ: Asia/Shanghai
           chmod +x ${{ github.workspace }}/mediatek-filogic/build24.sh
           echo "BUILD_TIME=$(date +'%Y.%m.%d')" >> $GITHUB_ENV
           
