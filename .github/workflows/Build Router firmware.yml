@@ -15,7 +15,7 @@
 # xiaomi_redmi-router-ax6000-stock ————原厂默认 bootloader（stock）版本
 # xiaomi_redmi-router-ax6000-ubootmod—————改装过 bootloader 的版本（ubootmod）
 
-name: Build  Router ImmortalWrt test---
+name: Build Router ImmortalWrt firmware
 
 on:
   workflow_dispatch:
@@ -558,7 +558,7 @@ jobs:
           fi
 
 
-      - name: WirelessRouter Firmware
+      - name: Router ImmortalWrt firmware
         run: |
           profile="${{ github.event.inputs.profile }}"
           echo "Building for profile: $profile"
