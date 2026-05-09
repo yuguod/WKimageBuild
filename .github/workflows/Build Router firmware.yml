@@ -668,7 +668,7 @@ jobs:
         uses: softprops/action-gh-release@v2.2.1
         with:
           tag_name: ${{ github.event.inputs.profile }}-${{ env.BUILD_TIME }}
-          name: ${{ github.event.inputs.profile }} 固件 - ${{ env.BUILD_TIME }}
+          name: ${{ env.BUILD_TIME }}-${{ env.platform }}-${{ github.event.inputs.profile }} 
           body_path: ${{ github.workspace }}/mediatek-filogic/info.md
           files: |
             ${{ github.workspace }}/bin/targets/${{ env.platform }}/*
