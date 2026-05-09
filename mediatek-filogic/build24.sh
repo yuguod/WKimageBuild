@@ -117,8 +117,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 # ———————— 新增重命名逻辑开始 ————————
-env:
-  TZ: Asia/Shanghai
+export TZ='Asia/Shanghai'
 echo "$(date '+%Y-%m-%d %H:%M:%S') - Renaming files to include date..."
 
 # 定义日期变量，例如 20240508
