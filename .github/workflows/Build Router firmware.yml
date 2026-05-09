@@ -522,7 +522,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-22.04
-
+    env:
+      TZ: Asia/Shanghai
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -530,7 +531,7 @@ jobs:
       - name: Set executable permissions
         run: |
           chmod +x ${{ github.workspace }}/mediatek-filogic/build24.sh
-          echo "BUILD_TIME=$(TZ='Asia/Shanghai' date +'%Y.%m.%d')" >> $GITHUB_ENV
+          echo "BUILD_TIME=$(date +'%Y.%m.%d')" >> $GITHUB_ENV
           
       - name: Save Custom Router IP into OpenWrt files
         run: |
