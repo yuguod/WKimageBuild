@@ -121,7 +121,7 @@ fi
 echo "$(date '+%Y-%m-%d %H:%M:%S') - Renaming files to include date..."
 
 # 定义日期变量，例如 20240508
-DATE_PREFIX=$(date +%Y%m%d)
+DATE_PREFIX=$(date +%Y%m%d-%H%M)
 
 # 进入生成的固件目录
 # ImageBuilder 默认生成的路径通常在 bin/targets/*/*
