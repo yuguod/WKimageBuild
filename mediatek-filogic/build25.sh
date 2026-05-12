@@ -102,5 +102,26 @@ if [ $? -ne 0 ]; then
     echo "$(date '+%Y-%m-%d %H:%M:%S') - Error: Build failed!"
     exit 1
 fi
+# ———————— 新增重命名逻辑开始 ————————
+export TZ='Asia/Shanghai'
+echo "$(date '+%Y-%m-%d %H:%M:%S') - Renaming files to include date..."
 
+# 定义日期变量，例如 20240508
+DATE_PREFIX=$(date +%Y%m%d-%H%M)
+
+# 进入生成的固件目录
+# ImageBuilder 默认生成的路径通常在 bin/targets/*/*
+cd bin/targets/*/*
+
+# 遍历并重命名所有以 immortalwrt 开头的文件
+for file in immortalwrt-*; do
+    if [ -f "$file" ]; then
+        echo "Renaming $file to ${DATE_PREFIX}-$file"
+        mv "$file" "${DATE_PREFIX}-$file"
+    fi
+done
+
+# 返回之前的工作目录，确保后续脚本逻辑正常
+cd - > /dev/null
+# ———————— 新增重命名逻辑结束 ————————
 echo "$(date '+%Y-%m-%d %H:%M:%S') - Build completed successfully."
