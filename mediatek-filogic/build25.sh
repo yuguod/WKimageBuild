@@ -17,6 +17,7 @@ else
   echo "✅ Run files copied to extra-packages:"
   # 解压并拷贝apk到packages目录
   sh shell/apk-prepare-packages.sh
+  chmod 644 packages.adb *.apk
   # ======= 关键修复：为本地离线包建立 apk 索引 =======
   #echo "📦 正在为本地软件包建立索引 Generating apk index..."
   #cd /home/build/immortalwrt/packages/
