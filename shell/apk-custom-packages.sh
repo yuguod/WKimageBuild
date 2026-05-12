@@ -51,8 +51,12 @@ CUSTOM_PACKAGES="$CUSTOM_PACKAGES kmod-ipt-tproxy"
 CUSTOM_PACKAGES="$CUSTOM_PACKAGES php8 php8-cgi php8-cli php8-mod-session php8-mod-curl"
 # Bandix流量监控 by timsaya
 CUSTOM_PACKAGES="$CUSTOM_PACKAGES luci-app-bandix luci-i18n-bandix-zh-cn"
+#IPTV组播工具
+PACKAGES="$PACKAGES igmpproxy"
 # IPTV 流媒体转发服务器 - rtp2httpd by stackia
 CUSTOM_PACKAGES="$CUSTOM_PACKAGES luci-app-rtp2httpd luci-i18n-rtp2httpd-zh-cn"
+#应用过滤
+PACKAGES="$PACKAGES luci-app-oaf luci-i18n-oaf-zh-cn"
 
 #===========================以下imm仓库内的软件==============================↓
 #CUSTOM_PACKAGES="$CUSTOM_PACKAGES luci-i18n-3cat-zh-cn"
