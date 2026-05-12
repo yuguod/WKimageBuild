@@ -518,6 +518,8 @@ on:
 permissions:
   contents: write
 
+# ... 前面 inputs 部分保持不变 ...
+
 jobs:
   build:
     runs-on: ubuntu-22.04
@@ -527,125 +529,95 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # 建议单独放一个步骤，确保在所有后续步骤中 env.BUILD_TIME 都可用
       - name: Set Build Time
         run: |
           echo "BUILD_TIME=$(date +'%Y.%m.%d')" >> $GITHUB_ENV
 
-      - name: Set executable permissions
-        run: |
-          # 保留你原来的权限设置
-          chmod +x ${{ github.workspace }}/mediatek-filogic/build25.sh
-          echo "BUILD_TIME=$(date +'%Y.%m.%d')" >> $GITHUB_ENV
-          chmod +x ${{ github.workspace }}/mediatek-filogic/build25.sh
-      
-      - name: Save Custom Router IP into OpenWrt files
+      - name: Save Custom Router IP
         run: |
           mkdir -p "${{ github.workspace }}/custom"
           echo "${{ github.event.inputs.custom_router_ip }}" > "${{ github.workspace }}/custom/custom_router_ip.txt"
-          echo "您设置的路由器管理地址是:${{ github.event.inputs.custom_router_ip }}"
-          # 后续步骤会将该文件映射到路由器/etc/config/custom_router_ip.txt 以便用于开机脚本99-custom.sh读取用户设置的ip
-
 
       - name: Validate PPPoE Inputs
         run: |
-          if [[ "${{ inputs.enable_pppoe }}" == "yes" ]]; then
-            if [[ -z "${{ inputs.pppoe_account }}" || -z "${{ inputs.pppoe_password }}" ]]; then
-              echo "Error: PPPoE account and password must be provided when PPPoE is enabled!"
+          # 统一使用 github.event.inputs
+          if [[ "${{ github.event.inputs.enable_pppoe }}" == "yes" ]]; then
+            if [[ -z "${{ github.event.inputs.pppoe_account }}" || -z "${{ github.event.inputs.pppoe_password }}" ]]; then
+              echo "Error: PPPoE account and password must be provided!"
               exit 1
             fi
           fi
-      
-    
+
       - name: Build Wireless ImmortalWrt 25.12.x
         run: | 
           profile="${{ github.event.inputs.profile }}"
           echo "Building for profile: $profile"
-          include_docker="${{ github.event.inputs.include_docker }}"
-          # 默认平台
-          echo "platform=mediatek/filogic" >> $GITHUB_ENV
+          
+          # 预设默认值
+          current_platform="mediatek/filogic"
+          tag="mediatek-filogic-openwrt-25.12.0-rc2"
 
-          # 读取 ipq807x 机型文件
-          ipq807x_models=$(cat model/ipq807x.txt | tr '\n' '|')
-          ipq807x_models=${ipq807x_models%|}
-          if [[ "$profile" =~ ^($ipq807x_models)$ ]]; then
-              case_tag="qualcommax-ipq807x-openwrt-25.12.0-rc2"
-              case_platform="qualcommax/ipq807x"
+          # 1. 处理外部 txt 列表逻辑
+          # 检查文件是否存在，防止 cat 报错
+          [ -f model/ipq807x.txt ] && ipq807x_models=$(cat model/ipq807x.txt | tr '\n' '|')
+          [ -f model/mt7621.txt ] && mt7621_models=$(cat model/mt7621.txt | tr '\n' '|')
+          [ -f model/bcm53xx.txt ] && bcm53xx_models=$(cat model/bcm53xx.txt | tr '\n' '|')
+
+          if [[ "$profile" =~ ^(${ipq807x_models%|})$ ]]; then
+              tag="qualcommax-ipq807x-openwrt-25.12.0-rc2"
+              current_platform="qualcommax/ipq807x"
+          elif [[ "$profile" =~ ^(${mt7621_models%|})$ ]]; then
+              tag="ramips-mt7621-openwrt-25.12.0-rc2"
+              current_platform="ramips/mt7621"
+          elif [[ "$profile" =~ ^(${bcm53xx_models%|})$ ]]; then
+              tag="bcm53xx-generic-openwrt-25.12.0-rc2"
+              current_platform="bcm53xx/generic"
           fi
 
-          # 读取 mt7621 机型文件
-          mt7621_models=$(cat model/mt7621.txt | tr '\n' '|')
-          mt7621_models=${mt7621_models%|}
-          if [[ "$profile" =~ ^($mt7621_models)$ ]]; then
-              case_tag="ramips-mt7621-openwrt-25.12.0-rc2"
-              case_platform="ramips/mt7621"
-          fi
-
-          # 读取 bcm53xx/generic 机型文件
-          bcm53xx_models=$(cat model/bcm53xx.txt | tr '\n' '|')
-          bcm53xx_models=${bcm53xx_models%|}
-          if [[ "$profile" =~ ^($bcm53xx_models)$ ]]; then
-              case_tag="bcm53xx-generic-openwrt-25.12.0-rc2"
-              case_platform="bcm53xx/generic"
-          fi
-
-          # 判断机型
+          # 2. 处理特殊 case 逻辑 (优先级更高，覆盖上面的判断)
           case "$profile" in
               glinet_gl-b2200)
-                  # 虽然它是高通ipq40xx平台 但由于都是gl机型 故放在一起 找起来方便
                   tag=ipq40xx-generic-openwrt-25.12.0-rc2
-                  echo "platform=ipq40xx/generic" >> $GITHUB_ENV
+                  current_platform="ipq40xx/generic"
                   ;;
               glinet_gl-axt1800|glinet_gl-ax1800)
-                  # 虽然它是高通ipq60xx平台 但由于都是gl机型 故放在一起 找起来方便
                   tag=qualcommax-ipq60xx-snapshot
-                  echo "platform=qualcommax/ipq60xx" >> $GITHUB_ENV
+                  current_platform="qualcommax/ipq60xx"
                   ;;
               xiaomi_redmi-router-ax6s)
                   tag=mediatek-mt7622-openwrt-25.12.0-rc2
-                  echo "platform=mediatek/mt7622" >> $GITHUB_ENV
+                  current_platform="mediatek/mt7622"
                   ;;
-              # 下列机型目前没有25.12 因此采用23.05.4分支来构建
-              cmcc_rax3000m-emmc-ubootmod | \
-              cmcc_rax3000m-nand-ubootmod | \
-              cmcc_a10 | \
-              abt_asr3000-ubootmod | \
-              imou_lc-hx3001-ubootmod | \
-              jcg_q30 | \
-              jcg_q30-ubootmod | \
-              xiaomi_mi-router-wr30u-112m-nmbm | \
-              cetron_ct3003-stock | \
-              xiaomi_redmi-router-ax6000 | \
-              qihoo_360t7-ubootmod)
+              cmcc_rax3000m-emmc-ubootmod | cmcc_rax3000m-nand-ubootmod | cmcc_a10 | abt_asr3000-ubootmod | imou_lc-hx3001-ubootmod | jcg_q30 | jcg_q30-ubootmod | xiaomi_mi-router-wr30u-112m-nmbm | cetron_ct3003-stock | xiaomi_redmi-router-ax6000 | qihoo_360t7-ubootmod)
                   tag=mediatek-filogic-openwrt-23.05.4
-                  ls ${{ github.workspace }}/mediatek-filogic/
+                  current_platform="mediatek/filogic"
+                  # 此时才去覆盖脚本
                   cp ${{ github.workspace }}/mediatek-filogic/build23.sh ${{ github.workspace }}/mediatek-filogic/build25.sh
                   ;;
-              *)
-                  # 如果前面匹配了 ipq807x、mt7621、bcm53xx 机型文件，则使用对应 tag
-                  if [[ -n "$case_tag" ]]; then
-                      tag=$case_tag
-                      echo "platform=$case_platform" >> $GITHUB_ENV
-                  else
-                      # 默认分支
-                      tag=mediatek-filogic-openwrt-25.12.0-rc2
-                  fi
-                  ;;
-            esac
+          esac
+
+          # 将最终确定的 platform 传给后续步骤
+          echo "platform=$current_platform" >> $GITHUB_ENV
           
-            docker run --rm -i \
-              --user root \
-              -v "${{ github.workspace }}/bin:/home/build/immortalwrt/bin" \
-              -v "${{ github.workspace }}/glinet:/home/build/immortalwrt/files/etc/uci-defaults" \
-              -v "${{ github.workspace }}/custom:/home/build/immortalwrt/files/etc/config" \
-              -v "${{ github.workspace }}/shell:/home/build/immortalwrt/shell" \
-              -v "${{ github.workspace }}/mediatek-filogic/build25.sh:/home/build/immortalwrt/build.sh" \
-              -e PROFILE=$profile \
-              -e INCLUDE_DOCKER=$include_docker \
-              -e ENABLE_PPPOE=${{ inputs.enable_pppoe }} \
-              -e PPPOE_ACCOUNT=${{ inputs.pppoe_account }} \
-              -e PPPOE_PASSWORD=${{ inputs.pppoe_password }} \
+          # 确保脚本有执行权限
+          chmod +x ${{ github.workspace }}/mediatek-filogic/build25.sh
+
+          # 执行 Docker 构建
+          docker run --rm -i \
+            --user root \
+            -v "${{ github.workspace }}/bin:/home/build/immortalwrt/bin" \
+            -v "${{ github.workspace }}/glinet:/home/build/immortalwrt/files/etc/uci-defaults" \
+            -v "${{ github.workspace }}/custom:/home/build/immortalwrt/files/etc/config" \
+            -v "${{ github.workspace }}/shell:/home/build/immortalwrt/shell" \
+            -v "${{ github.workspace }}/mediatek-filogic/build25.sh:/home/build/immortalwrt/build.sh" \
+            -e PROFILE=$profile \
+            -e INCLUDE_DOCKER=${{ github.event.inputs.include_docker }} \
+            -e ENABLE_PPPOE=${{ github.event.inputs.enable_pppoe }} \
+            -e PPPOE_ACCOUNT=${{ github.event.inputs.pppoe_account }} \
+            -e PPPOE_PASSWORD=${{ github.event.inputs.pppoe_password }} \
             immortalwrt/imagebuilder:$tag /bin/bash /home/build/immortalwrt/build.sh
+
+      # ... 后续 Upload 步骤保持不变 ...
           
 
       - name: Create info
