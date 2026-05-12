@@ -527,8 +527,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # 建议单独放一个步骤，确保在所有后续步骤中 env.BUILD_TIME 都可用
+      - name: Set Build Time
+        run: |
+          echo "BUILD_TIME=$(date +'%Y.%m.%d')" >> $GITHUB_ENV
+
       - name: Set executable permissions
         run: |
+          # 保留你原来的权限设置
+          chmod +x ${{ github.workspace }}/mediatek-filogic/build25.sh
           echo "BUILD_TIME=$(date +'%Y.%m.%d')" >> $GITHUB_ENV
           chmod +x ${{ github.workspace }}/mediatek-filogic/build25.sh
       
