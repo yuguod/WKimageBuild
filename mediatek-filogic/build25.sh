@@ -18,16 +18,10 @@ else
   # 解压并拷贝apk到packages目录
   sh shell/apk-prepare-packages.sh
   chmod 644 packages.adb *.apk
-  # ======= 关键修复：为本地离线包建立 apk 索引 =======
-  #echo "📦 正在为本地软件包建立索引 Generating apk index..."
-  #cd /home/build/immortalwrt/packages/
-  
-  # 使用 apk 工具创建索引数据库 (adb = apk database)
-  # 注意：这里需要确保环境里有 apk 工具，ImageBuilder 镜像通常自带
-  #apk index -o packages.adb *.apk
-  
-  # 返回目录
-  #cd - > /dev/null
+  # 找到脚本中拷贝 apk 的位置，在之后加入：
+  cd /home/build/immortalwrt/packages/
+  apk index -o packages.adb *.apk
+  cd -
   
   #echo "✅ 索引建立完成内容如下："
   ls -lah /home/build/immortalwrt/packages/
