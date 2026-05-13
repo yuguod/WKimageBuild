@@ -58,7 +58,7 @@ CUSTOM_PACKAGES="$CUSTOM_PACKAGES luci-app-bandix luci-i18n-bandix-zh-cn"
 #IPTV组播工具
 PACKAGES="$PACKAGES igmpproxy"
 # IPTV 流媒体转发服务器 - rtp2httpd by stackia
-CUSTOM_PACKAGES="$CUSTOM_PACKAGES luci-app-rtp2httpd luci-i18n-rtp2httpd-zh-cn"
+#CUSTOM_PACKAGES="$CUSTOM_PACKAGES luci-app-rtp2httpd luci-i18n-rtp2httpd-zh-cn"
 #应用过滤
 PACKAGES="$PACKAGES appfilter luci-app-oaf luci-i18n-oaf-zh-cn"
 
