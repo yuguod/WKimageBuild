@@ -17,9 +17,8 @@ else
   echo "✅ Run files copied to extra-packages:"
   # 解压并拷贝apk到packages目录
   sh shell/apk-prepare-packages.sh
-  chmod 644 packages.adb *.apk
-  # 找到脚本中拷贝 apk 的位置，在之后加入：
   cd /home/build/immortalwrt/packages/
+  chmod 644 packages.adb *.apk
   apk index -o packages.adb *.apk
   cd -
   
