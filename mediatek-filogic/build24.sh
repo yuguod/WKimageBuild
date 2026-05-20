@@ -6,7 +6,8 @@ source shell/switch_repository.sh
 #echo "✅ 你选择了第三方软件包：$CUSTOM_PACKAGES"
 # 下载 run 文件仓库
 echo "🔄 正在同步第三方软件仓库 Cloning run file repo..."
-git clone --depth=1 https://github.com/wukongdaily/store.git /tmp/store-run-repo
+#git clone --depth=1 https://github.com/wukongdaily/store.git /tmp/store-run-repo
+git clone --depth=1 https://github.com/yuguod/store.git /tmp/store-run-repo
 
 # 拷贝 run/arm64 下所有 run 文件和ipk文件 到 extra-packages 目录
 mkdir -p /home/build/immortalwrt/extra-packages
@@ -44,22 +45,26 @@ cat /home/build/immortalwrt/files/etc/config/pppoe-settings
 # 输出调试信息
 echo "$(date '+%Y-%m-%d %H:%M:%S') - Starting build process..."
 
-
 # 定义所需安装的包列表 下列插件你都可以自行删减
 PACKAGES=""
 PACKAGES="$PACKAGES curl luci luci-i18n-base-zh-cn"
 PACKAGES="$PACKAGES luci-i18n-firewall-zh-cn"
 PACKAGES="$PACKAGES luci-theme-argon"
-PACKAGES="$PACKAGES luci-app-argon-config"
-PACKAGES="$PACKAGES luci-i18n-argon-config-zh-cn"
-PACKAGES="$PACKAGES luci-i18n-diskman-zh-cn"
+#PACKAGES="$PACKAGES luci-app-argon-config"
+#PACKAGES="$PACKAGES luci-i18n-argon-config-zh-cn"
+#PACKAGES="$PACKAGES luci-i18n-diskman-zh-cn"
 #24.10.0
 PACKAGES="$PACKAGES luci-i18n-package-manager-zh-cn"
 PACKAGES="$PACKAGES luci-i18n-ttyd-zh-cn"
 PACKAGES="$PACKAGES openssh-sftp-server"
+# 代理工具
+PACKAGES="$PACKAGES luci-app-openclash"
 # 文件管理器
 PACKAGES="$PACKAGES luci-i18n-filemanager-zh-cn"
-
+#IPTV组播工具
+PACKAGES="$PACKAGES igmpproxy"
+#PACKAGES="$PACKAGES luci-i18n-udpxy-zh-cn"
+#PACKAGES="$PACKAGES luci-i18n-msd_lite-zh-cn"
 
 # 第三方软件包 合并
 # ======== shell/custom-packages.sh =======
@@ -89,11 +94,11 @@ if echo "$PACKAGES" | grep -q "luci-app-openclash"; then
     # Download GeoIP and GeoSite
     wget -q https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat -O files/etc/openclash/GeoIP.dat
     wget -q https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat -O files/etc/openclash/GeoSite.dat
-    # Download latest openclash Client
-    URL=$(curl -s https://api.github.com/repos/vernesong/OpenClash/releases/latest \
-      | grep "browser_download_url.*ipk" \
-      | head -n1 \
-      | cut -d '"' -f 4)
+        # Download latest openclash Client
+        URL=$(curl -s https://api.github.com/repos/vernesong/OpenClash/releases/latest \
+          | grep "browser_download_url.*ipk" \
+          | head -n1 \
+          | cut -d '"' -f 4)
     echo "OpenClash latest ipk: $URL"
     wget "$URL" -P /home/build/immortalwrt/packages/
 else
@@ -111,5 +116,26 @@ if [ $? -ne 0 ]; then
     echo "$(date '+%Y-%m-%d %H:%M:%S') - Error: Build failed!"
     exit 1
 fi
+# ———————— 新增重命名逻辑开始 ————————
+export TZ='Asia/Shanghai'
+echo "$(date '+%Y-%m-%d %H:%M:%S') - Renaming files to include date..."
 
+# 定义日期变量，例如 20240508
+DATE_PREFIX=$(date +%Y%m%d-%H%M)
+
+# 进入生成的固件目录
+# ImageBuilder 默认生成的路径通常在 bin/targets/*/*
+cd bin/targets/*/*
+
+# 遍历并重命名所有以 immortalwrt 开头的文件
+for file in immortalwrt-*; do
+    if [ -f "$file" ]; then
+        echo "Renaming $file to ${DATE_PREFIX}-$file"
+        mv "$file" "${DATE_PREFIX}-$file"
+    fi
+done
+
+# 返回之前的工作目录，确保后续脚本逻辑正常
+cd - > /dev/null
+# ———————— 新增重命名逻辑结束 ————————
 echo "$(date '+%Y-%m-%d %H:%M:%S') - Build completed successfully."

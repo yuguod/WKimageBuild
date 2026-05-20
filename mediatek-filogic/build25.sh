@@ -7,15 +7,22 @@ else
   # ============= 同步第三方插件库==============
   # 同步第三方软件仓库run/apk
   echo "🔄 正在同步第三方软件仓库 Cloning apk file repo..."
-  git clone --depth=1 https://github.com/wukongdaily/apk.git /tmp/store-apk-repo
+  # git clone --depth=1 https://github.com/wukongdaily/apk.git /tmp/store-apk-repo
+  git clone --depth=1 https://github.com/yuguod/apk.git /tmp/store-apk-repo
 
   # 拷贝 run/arm64 下所有 run 文件和apk文件 到 extra-packages 目录
   mkdir -p /home/build/immortalwrt/extra-packages
+  #cp -r /tmp/store-apk-repo/run/arm64/* /home/build/immortalwrt/extra-packages/
   cp -r /tmp/store-apk-repo/run/arm64-a53/* /home/build/immortalwrt/extra-packages/
-
   echo "✅ Run files copied to extra-packages:"
   # 解压并拷贝apk到packages目录
   sh shell/apk-prepare-packages.sh
+  cd /home/build/immortalwrt/packages/
+  chmod 644 packages.adb *.apk
+  apk index -o packages.adb *.apk
+  cd -
+  
+  #echo "✅ 索引建立完成内容如下："
   ls -lah /home/build/immortalwrt/packages/
 fi
 
@@ -101,5 +108,26 @@ if [ $? -ne 0 ]; then
     echo "$(date '+%Y-%m-%d %H:%M:%S') - Error: Build failed!"
     exit 1
 fi
+# ———————— 新增重命名逻辑开始 ————————
+export TZ='Asia/Shanghai'
+echo "$(date '+%Y-%m-%d %H:%M:%S') - Renaming files to include date..."
 
+# 定义日期变量，例如 20240508
+DATE_PREFIX=$(date +%Y%m%d-%H%M)
+
+# 进入生成的固件目录
+# ImageBuilder 默认生成的路径通常在 bin/targets/*/*
+cd bin/targets/*/*
+
+# 遍历并重命名所有以 immortalwrt 开头的文件
+for file in immortalwrt-*; do
+    if [ -f "$file" ]; then
+        echo "Renaming $file to ${DATE_PREFIX}-$file"
+        mv "$file" "${DATE_PREFIX}-$file"
+    fi
+done
+
+# 返回之前的工作目录，确保后续脚本逻辑正常
+cd - > /dev/null
+# ———————— 新增重命名逻辑结束 ————————
 echo "$(date '+%Y-%m-%d %H:%M:%S') - Build completed successfully."
