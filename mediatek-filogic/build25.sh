@@ -8,12 +8,12 @@ else
   # 同步第三方软件仓库run/apk
   echo "🔄 正在同步第三方软件仓库 Cloning apk file repo..."
   git clone --depth=1 https://github.com/wukongdaily/apk.git /tmp/store-apk-repo
-  git clone --depth=1 https://github.com/yuguod/apk.git /tmp/store-apk-repo
+  git clone --depth=1 https://github.com/yuguod/apk.git /tmp/yuguod-apk-repo
 
   # 拷贝 run/arm64 下所有 run 文件和apk文件 到 extra-packages 目录
   mkdir -p /home/build/immortalwrt/extra-packages
-  #cp -r /tmp/store-apk-repo/run/arm64/* /home/build/immortalwrt/extra-packages/
   cp -r /tmp/store-apk-repo/run/arm64-a53/* /home/build/immortalwrt/extra-packages/
+  cp -r /tmp/yuguod-apk-repo/run/arm64-a53/* /home/build/immortalwrt/extra-packages/
   echo "✅ Run files copied to extra-packages:"
   # 解压并拷贝apk到packages目录
   sh shell/apk-prepare-packages.sh
