@@ -525,7 +525,7 @@ jobs:
       TZ: Asia/Shanghai
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Set executable permissions
         run: |
@@ -549,7 +549,7 @@ jobs:
           fi
       
     
-      - name: Build Wireless ImmortalWrt 25.12.x
+      - name: Build wireless Router firmware 25.12
         run: | 
           profile="${{ github.event.inputs.profile }}"
           echo "Building for profile: $profile"
